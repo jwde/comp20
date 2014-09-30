@@ -1,14 +1,15 @@
-div.homer {
-        width:600px;
-        height:600px;
-        background:url(homer.jpg) 0 0;
+@media only screen
+and (min-width : 1281px) {
+        div.homer {
+                width:600px;
+                height:600px;
+                background:url(homer.jpg) 0 0;
+        }
 }
 
-
-
 @media only screen
-and (min-device-width : 1025)
-and (max-device-width : 1280) {
+and (min-width : 1025px)
+and (max-width : 1280px) {
         div.homer {
                 width:300px;
                 height:300px;
@@ -17,8 +18,8 @@ and (max-device-width : 1280) {
 }
 
 @media only screen
-and (min-device-width : 769)
-and (max-device-width : 1024) {
+and (min-width : 769px)
+and (max-width : 1024px) {
         div.homer {
                 width:300px;
                 height:300px;
@@ -27,8 +28,8 @@ and (max-device-width : 1024) {
 }
 
 @media only screen
-and (min-device-width : 481)
-and (max-device-width : 768) {
+and (min-width : 481px)
+and (max-width : 768px) {
         div.homer {
                 width:300px;
                 height:300px;
@@ -37,7 +38,7 @@ and (max-device-width : 768) {
 }
 
 @media only screen
-and (max-device-width : 480) {
+and (max-width : 480px) {
         div.homer {
                 width:300px;
                 height:300px;

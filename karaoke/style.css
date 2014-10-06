@@ -1,0 +1,21 @@
+h1#title {
+        font-family: 'Trebuchet MS', Helvetica, sans-serif;
+        padding-left: 35%;
+        padding-right: 35%;
+        width: 30%;
+        background-color: #CCCCCC;
+        color: #2266EE;
+}
+
+video#music_video {
+        margin-left: 35%;
+        margin-right: 35%;
+}
+
+div#lyrics {
+        font-family: 'Trebuchet MS', Helvetica, sans-serif;
+        margin-left: 35%;
+        margin-right: 35%;
+        margin-top: 15px;
+        width: 30%;
+}

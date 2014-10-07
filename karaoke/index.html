@@ -24,11 +24,11 @@
         stanza5End = 127;
         stanza6End = 167;
 
-        stanza1 = "Oh, I could hide 'neath the wings<br>Of the bluebird as she sings.<br>The six o'clock alarm would never ring.<br>But it rings and I rise,<br>Wipe the sleep out of my eyes.<br>My shavin' razor's cold and it stings.";
+        stanza1 = "Oh, I could hide 'neath the wings<br>Of the bluebird as she sings.<br><img src=\"img/alarm.jpg\" alt=\"Image of alarm clock\"\><br>The six o'clock alarm would never ring.<br>But it rings and I rise,<br>Wipe the sleep out of my eyes.<br>My shavin' razor's cold and it stings.";
 
         stanza2 = "Cheer up, Sleepy Jean.<br>Oh, what can it mean.<br>To a daydream believer<br>And a homecoming queen.";
 
-        stanza3 = "You once thought of me<br>As a white knight on a steed.<br>Now you know how happy I can be.<br>Oh, and our good times start and end<br>Without dollar one to spend.<br>But how much, baby, do we really need.";
+        stanza3 = "You once thought of me<br><img src=\"img/knight.jpg\" alt=\"Image of white knight\"\><br>As a white knight on a steed.<br>Now you know how happy I can be.<br>Oh, and our good times start and end<br>Without dollar one to spend.<br>But how much, baby, do we really need.";
 
         stanza4 = "Cheer up, Sleepy Jean.<br>Oh, what can it mean.<br>To a daydream believer<br>And a homecoming queen.<br>Cheer up, Sleepy Jean.<br>Oh, what can it mean.<br>To a daydream believer<br>And a homecoming queen.";
 
@@ -36,32 +36,52 @@
 
         stanza6 = "Cheer up, Sleepy Jean.<br>Oh, what can it mean.<br>To a daydream believer<br>And a homecoming queen.<br>[Repeat and fade]";
 
+        loaded = 0;
+
         function UpdateLyrics() {
                 music_video = document.getElementById("music_video");
                 lyrics = document.getElementById("lyrics");
                 if (music_video.currentTime > stanza1Start &&
                     music_video.currentTime < stanza1End) {
-                        lyrics.innerHTML = stanza1;
+                        if (loaded != 1) {
+                                lyrics.innerHTML = stanza1;
+                        }
+                        loaded = 1;
                 }
                 else if (music_video.currentTime >= stanza1End &&
                          music_video.currentTime < stanza2End) {
-                        lyrics.innerHTML = stanza2;
+                        if (loaded != 2) {
+                                lyrics.innerHTML = stanza2;
+                        }
+                        loaded = 2;
                 }
                 else if (music_video.currentTime >= stanza2End &&
                          music_video.currentTime < stanza3End) {
-                        lyrics.innerHTML = stanza3;
+                        if (loaded != 3) {
+                                lyrics.innerHTML = stanza3;
+                        }
+                        loaded = 3;
                 }
                 else if (music_video.currentTime >= stanza3End &&
                          music_video.currentTime < stanza4End) {
-                        lyrics.innerHTML = stanza4;
+                        if (loaded != 4) {
+                                lyrics.innerHTML = stanza4;
+                        }
+                        loaded = 4;
                 }
                 else if (music_video.currentTime >= stanza4End &&
                          music_video.currentTime < stanza5End) {
-                        lyrics.innerHTML = stanza5;
+                        if (loaded != 5) {
+                                lyrics.innerHTML = stanza5;
+                        }
+                        loaded = 5;
                 }
                 else if (music_video.currentTime >= stanza5End &&
                          music_video.currentTime < stanza6End) {
-                        lyrics.innerHTML = stanza6;
+                        if (loaded != 6) {
+                                lyrics.innerHTML = stanza6;
+                        }
+                        loaded = 6;
                 }
                 else {
                         lyrics.innerHTML = "";

@@ -45,8 +45,12 @@
                                 UpdateTrain(trainXhr.responseText);
                         }
                 };
-                trainXhr.open("get", "http://developer.mbta.com/lib/rthr/red.json", true);
-                trainXhr.send();
+                function UpdateRequest() {
+                        trainXhr.open("get", "http://developer.mbta.com/lib/rthr/red.json", true);
+                        trainXhr.send();
+                }
+                UpdateRequest();
+                setInterval(UpdateRequest, 5000);
                 function UpdateMarkers() {
                         if (typeof(markers) != 'undefined' &&
                             typeof(map) != 'undefined') {

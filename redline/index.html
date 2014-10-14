@@ -8,18 +8,30 @@
         <div id="map"></div>
         <script type="text/javascript"
                 src="http://maps.googleapis.com/maps/api/js?sensor=true&amp;libraries=places"></script>
-        <script>
-                function initializemap() {
+        <script type="text/javascript">
+                var map;
+                function InitializeMap() {
                         var mapOptions = {
-                                center: {lat: 42.24018,
-                                         lng: -71.00518},
-                                zoom: 8
+                                center: {lat: 42.35674,
+                                         lng: -71.08608},
+                                zoom: 13
                         };
-                        var map = new google.maps.Map(
+                        map = new google.maps.Map(
                                         document.getElementById('map'),
                                         mapOptions);
                 }
-                google.maps.event.addDomListener(window, 'load', initialize);
+                google.maps.event.addDomListener(window, 'load', InitializeMap);
+                function UpdateTrain(data) {
+                        console.log("updated");
+                        response = JSON.parse(data);
+                        marker = new google.maps.Marker({
+                                        position: response.TripList.Position,
+                                        title: "Red Line Train"});
+                        marker.setMap(map);
+                        alert(response.TripList.Position);
+                }
+        </script>
+        <script src="http://developer.mbta.com/lib/rthr/red.json?callback=UpdateTrain">
         </script>
 </body>
 </html>

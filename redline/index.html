@@ -38,6 +38,15 @@
                                 }
                                         });
                 }
+                trainXhr = new XMLHttpRequest();
+                trainXhr.onreadystatechange = function() {
+                        if (trainXhr.readyState == 4 &&
+                            trainXhr.status == 200) {
+                                UpdateTrain(trainXhr.responseText);
+                        }
+                };
+                trainXhr.open("get", "http://developer.mbta.com/lib/rthr/red.json", true);
+                trainXhr.send();
                 function UpdateMarkers() {
                         if (typeof(markers) != 'undefined' &&
                             typeof(map) != 'undefined') {
@@ -47,8 +56,6 @@
                                 }
                         }
                 }
-        </script>
-        <script src="http://jsonpwrapper.com/?urls[]=http%3A%2F%2Fdeveloper.mbta.com%2Flib%2Frthr%2Fred.json&callback=UpdateTrain">
         </script>
 </body>
 </html>

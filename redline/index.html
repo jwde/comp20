@@ -10,6 +10,7 @@
                 src="http://maps.googleapis.com/maps/api/js?sensor=true&amp;libraries=places"></script>
         <script type="text/javascript">
                 var map;
+                var markers = {};
                 function InitializeMap() {
                         var mapOptions = {
                                 center: {lat: 42.35674,
@@ -19,19 +20,35 @@
                         map = new google.maps.Map(
                                         document.getElementById('map'),
                                         mapOptions);
+                        google.maps.event.addListenerOnce(map, 'idle', UpdateMarkers);
                 }
                 google.maps.event.addDomListener(window, 'load', InitializeMap);
                 function UpdateTrain(data) {
-                        console.log("updated");
-                        response = JSON.parse(data);
-                        marker = new google.maps.Marker({
-                                        position: response.TripList.Position,
-                                        title: "Red Line Train"});
-                        marker.setMap(map);
-                        alert(response.TripList.Position);
+                        response = JSON.parse(data[0].body);
+                        response.TripList.Trips.forEach(function(trip) {
+                                if (typeof(trip.Position) != 'undefined') {
+                                        latlng = new google.maps.LatLng(
+                                                trip.Position['Lat'],
+                                                trip.Position['Long']
+                                                );
+                                        markers[trip.TripID] = new google.maps.Marker({
+                                                position: latlng,
+                                                title: "Red Line Train"
+                                                });
+                                }
+                                        });
+                }
+                function UpdateMarkers() {
+                        if (typeof(markers) != 'undefined' &&
+                            typeof(map) != 'undefined') {
+                                for (var marker in markers) {
+                                        markers[marker].setMap(map);
+                                        console.log("set marker");
+                                }
+                        }
                 }
         </script>
-        <script src="http://developer.mbta.com/lib/rthr/red.json?callback=UpdateTrain">
+        <script src="http://jsonpwrapper.com/?urls[]=http%3A%2F%2Fdeveloper.mbta.com%2Flib%2Frthr%2Fred.json&callback=UpdateTrain">
         </script>
 </body>
 </html>

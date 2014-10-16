@@ -25,18 +25,22 @@
                 }
                 google.maps.event.addDomListener(window, 'load', InitializeMap);
 
-                function UpdateMap() {
-                        locationxhr = new XMLHttpRequest();
+                function SendLocationInfo(position) {
+                       function LocationRequestStateChange() {
+                                if (locationxhr.status == 200 && 
+                                    locationxhr.readyState == 4) {
+                                        parsedresponse = JSON.parse(locationxhr.responseText);
+                                        parsedresponse.students.forEach(RenderStudent);
+                                        parsedresponse.characters.forEach(RenderCharacter);
+                                // Update the map with the response
+                                }
+                        }
+                        var locationxhr = new XMLHttpRequest();
                         locationxhr.onreadystatechange =
                                 LocationRequestStateChange;
                         locationxhr.open("post",
                                         "http://chickenofthesea.herokuapp.com/sendLocation", true);
                         locationxhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-                        // change to watchPosition eventually to continually update
-                        navigator.geolocation.getCurrentPosition(SendLocationInfo);
-                }
-
-                function SendLocationInfo(position) {
                         var params = "login=" +
                                         login +
                                         "&lat=" +
@@ -46,14 +50,14 @@
                         locationxhr.send(params);
                 }
  
-                function LocationRequestStateChange() {
-                        if (locationxhr.status == 200 && 
-                                        locationxhr.readyState == 4) {
-                                parsedresponse = JSON.parse(locationxhr.responseText);
-                                // Update the map with the response
-                        }
+                function RenderStudent(student) {
+                        console.log(student);
                 }
-                UpdateMap();
+
+                function RenderCharacter(character) {
+                        console.log(character);
+                }
+                navigator.geolocation.watchPosition(SendLocationInfo);
         </script>
 </body>
 </html>

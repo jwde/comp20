@@ -16,11 +16,20 @@
                 var myLoc;
                 var position;
                 var selfMarker;
+                var selfImage = "charImg/ernie.png";
                 var studentMarkers = {};
                 var studentLoaded = {};
                 var characterMarkers = {};
                 var characterLoaded = {};
                 var initialPan = false;
+                var characterImages = {};
+                characterImages["carmen"] = "charImg/carmen.png";
+                characterImages["waldo"] = "charImg/waldo.png";
+                characterImages["batman"] = "charImg/batman.png";
+                characterImages["nr"] = "charImg/nr.png";
+                characterImages["snape"] = "charImg/snape.png";
+                characterImages["hescott"] = "charImg/hescott.png";
+
                 function InitializeMap() {
                         var mapOptions = {
                                 center: {lat: 42.35674,
@@ -75,6 +84,7 @@
                         } else {
                                 selfMarker = new google.maps.Marker({
                                         map: map,
+                                        icon: selfImage,
                                         position: latlng,
                                         title: login
                                                 });
@@ -97,13 +107,14 @@
                 }
 
                 function UpdateCharacter(character) {
-                        var latlng = new google.maps.LatLng(character.loc.lat,
-                                                            character.loc.lng);
+                        var latlng = new google.maps.LatLng(character.loc.latitude,
+                                                            character.loc.longitude);
                         if (characterMarkers[character.name]) {
                                 characterMarkers[character.name].setPosition(latlng);
                         } else {
                                 var marker = new google.maps.Marker({
                                         map: map,
+                                        icon: characterImages[character.name],
                                         position: latlng,
                                         title: character.name
                                                 });               

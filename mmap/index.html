@@ -125,7 +125,8 @@
 
                 function UpdateDistances() {
                         var distanceList = document.getElementById("distanceList");
-                        var distances = "<p>";
+                        var distances = [];
+                        var iter = 0;
                         for (var key in characterMarkers) {
                                 var R = 3958.756;
                                 var lat1 = position.coords.latitude;
@@ -139,11 +140,19 @@
                                         Math.sin(dLng/2) * Math.sin(dLng/2);
                                 var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
                                 var distance = R * c;
-                                distances += "Distance from " + login + " to " + key +
-                                        ": " + distance + " miles<br/>";
+                                distances[iter] = [distance, "Distance from " + login
+                                        + " to " + key +
+                                        ": " + distance + " miles<br/>"];
+                                ++iter;
                         }
-                        distances += "</p>";
-                        distanceList.innerHTML = distances;
+                        distances.sort(function(a, b) {
+                                return a[0] - b[0];
+                                        });
+                        var innerText = "";
+                        for (var i = 0; i < distances.length; i++) {
+                                innerText += distances[i][1];
+                        }
+                        distanceList.innerHTML = innerText;
                 }
  
                 function UpdateStudent(student) {

@@ -6,8 +6,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body id="mainBody">
-        <div id="sideTable"></div>
         <div id="map"></div>
+        <p id="distanceList"></p>
         <script type="text/javascript"
                 src="http://maps.googleapis.com/maps/api/js?sensor=true&amp;libraries=places"></script>
         <script type="text/javascript">
@@ -71,6 +71,7 @@
                                         position.coords.longitude;
                                 locationxhr.send(params);
                         }
+                        UpdateDistances();
                 }
 
                 function UpdateLocalLocation(newPosition) {
@@ -83,14 +84,14 @@
                                 map.panTo(selflatlng);
                                 initialPan = true;
                         }
-                        var infoContent = '<p>Login: ' +
+                        var infoContent = 'Login: ' +
                                 login + '<br/>' +
                                 'Latitude: ' +
                                 position.coords.latitude + '<br/>' +
                                 'Longitude: ' +
                                 position.coords.longitude + '<br/>' +
                                 'Timestamp: ' +
-                                new Date() + '</p>';
+                                new Date();
                         if (selfMarker) {
                                 selfMarker.setPosition(selflatlng);
                                 selfInfoWindow.content = infoContent;
@@ -115,6 +116,34 @@
                                 var path = [selflatlng, characterMarkers[key].position];
                                 characterPolyLines[key].setPath(path);
                         }
+                        UpdateDistances();
+                }
+
+                function toRad(x) {
+                        return x * Math.PI / 180;
+                }
+
+                function UpdateDistances() {
+                        var distanceList = document.getElementById("distanceList");
+                        var distances = "<p>";
+                        for (var key in characterMarkers) {
+                                var R = 3958.756;
+                                var lat1 = position.coords.latitude;
+                                var lng1 = position.coords.longitude;
+                                var lat2 = characterMarkers[key].position.k;
+                                var lng2 = characterMarkers[key].position.B;
+                                var dLat = toRad(lat2 - lat1);
+                                var dLng = toRad(lng2 - lng1);
+                                var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                                        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                                        Math.sin(dLng/2) * Math.sin(dLng/2);
+                                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                                var distance = R * c;
+                                distances += "Distance from " + login + " to " + key +
+                                        ": " + distance + " miles<br/>";
+                        }
+                        distances += "</p>";
+                        distanceList.innerHTML = distances;
                 }
  
                 function UpdateStudent(student) {

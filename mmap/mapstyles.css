@@ -1,5 +1,15 @@
 html, body, #map {
-        height: 100%;
+        height: 94%;
         margin: 0;
         padding: 0;
+}
+
+#distanceList {
+        height: auto;
+        margin-top: 0px;
+        padding-top: 0px;
+        font-family: 'Trebuchet MS', Helvetica, sans-serif;
+        font-size: auto;
+        font-color: #00CC77;
+        background-color: #CCCCCC;
 }

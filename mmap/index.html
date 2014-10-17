@@ -1,8 +1,9 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
         <title>Marauder's Map</title>
         <link rel="stylesheet" href="mapstyles.css"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body id="mainBody">
         <div id="sideTable"></div>
@@ -14,10 +15,12 @@
                 var login = "ErnieMacmillan";
                 var myLoc;
                 var position;
+                var selfMarker;
                 var studentMarkers = {};
                 var studentLoaded = {};
                 var characterMarkers = {};
                 var characterLoaded = {};
+                var initialPan = false;
                 function InitializeMap() {
                         var mapOptions = {
                                 center: {lat: 42.35674,
@@ -57,35 +60,55 @@
                         }
                 }
 
-                function SendLocationInfo(newPosition) {
+                function UpdateLocalLocation(newPosition) {
                         position = newPosition;
                         var latlng = new google.maps.LatLng(
                                 position.coords.latitude,
                                 position.coords.longitude
                                         );
-                        map.panTo(latlng);
+                        if (!initialPan) {
+                                map.panTo(latlng);
+                                initialPan = true;
+                        }
+                        if (selfMarker) {
+                                selfMarker.setPosition(latlng);
+                        } else {
+                                selfMarker = new google.maps.Marker({
+                                        map: map,
+                                        position: latlng,
+                                        title: login
+                                                });
+                        }
                 }
  
                 function UpdateStudent(student) {
                         var latlng = new google.maps.LatLng(student.lat,
                                                             student.lng);
-                        var marker = new google.maps.Marker({
-                                map: map,
-                                position: latlng,
-                                title: student.login
-                                        });
-                        studentMarkers[student.login] = marker;
+                        if (studentMarkers[student.login]) {
+                                studentMarkers[student.login].setPosition(latlng);
+                        } else {
+                                var marker = new google.maps.Marker({
+                                        map: map,
+                                        position: latlng,
+                                        title: student.login
+                                                });
+                                studentMarkers[student.login] = marker;
+                        }
                 }
 
                 function UpdateCharacter(character) {
                         var latlng = new google.maps.LatLng(character.loc.lat,
                                                             character.loc.lng);
-                        var marker = new google.maps.Marker({
-                                map: map,
-                                position: latlng,
-                                title: character.name
-                                        });               
-                        characterMarkers[character.name] = marker;
+                        if (characterMarkers[character.name]) {
+                                characterMarkers[character.name].setPosition(latlng);
+                        } else {
+                                var marker = new google.maps.Marker({
+                                        map: map,
+                                        position: latlng,
+                                        title: character.name
+                                                });               
+                                characterMarkers[character.name] = marker;
+                        }
                 }
 
                 function RenderMarkers() {
@@ -102,7 +125,7 @@
                                 }
                         }
                 }
-                navigator.geolocation.watchPosition(SendLocationInfo);
+                navigator.geolocation.watchPosition(UpdateLocalLocation);
                 UpdateRemoteLoc();
                 setInterval(UpdateRemoteLoc, 1000);
         </script>

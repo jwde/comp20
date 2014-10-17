@@ -12,12 +12,17 @@
         <script type="text/javascript">
                 var map;
                 var login = "ErnieMacmillan";
-                var markers = {};
+                var myLoc;
+                var position;
+                var studentMarkers = {};
+                var studentLoaded = {};
+                var characterMarkers = {};
+                var characterLoaded = {};
                 function InitializeMap() {
                         var mapOptions = {
                                 center: {lat: 42.35674,
                                          lng: -71.08608},
-                                zoom: 13
+                                zoom: 14
                         };
                         map = new google.maps.Map(
                                         document.getElementById('map'),
@@ -25,14 +30,23 @@
                 }
                 google.maps.event.addDomListener(window, 'load', InitializeMap);
 
+                function UpdateRemoteLoc() {
+                        
+                }
+
                 function SendLocationInfo(position) {
-                       function LocationRequestStateChange() {
+                        function LocationRequestStateChange() {
                                 if (locationxhr.status == 200 && 
                                     locationxhr.readyState == 4) {
                                         parsedresponse = JSON.parse(locationxhr.responseText);
-                                        parsedresponse.students.forEach(RenderStudent);
-                                        parsedresponse.characters.forEach(RenderCharacter);
-                                // Update the map with the response
+                                        parsedresponse.students.forEach(UpdateStudent);
+                                        parsedresponse.characters.forEach(UpdateCharacter);
+                                        var latlng = new google.maps.LatLng(
+                                                position.coords.latitude,
+                                                position.coords.longitude
+                                                        );
+                                        map.panTo(latlng);
+                                        RenderMarkers();
                                 }
                         }
                         var locationxhr = new XMLHttpRequest();
@@ -50,12 +64,43 @@
                         locationxhr.send(params);
                 }
  
-                function RenderStudent(student) {
-                        console.log(student);
+                function UpdateStudent(student) {
+                        var latlng = new google.maps.LatLng(student.lat,
+                                                            student.lng);
+                        var marker = new google.maps.Marker({
+                                map: map,
+                                position: latlng,
+                                title: student.login
+                                        });
+                        studentMarkers[student.login] = marker;
                 }
 
-                function RenderCharacter(character) {
-                        console.log(character);
+                function UpdateCharacter(character) {
+                        var latlng = new google.maps.LatLng(character.loc.lat,
+                                                            character.loc.lng);
+                        var marker = new google.maps.Marker({
+                                map: map,
+                                position: latlng,
+                                title: character.name
+                                        });               
+                        characterMarkers[character.name] = marker;
+                }
+
+                function RenderMarkers() {
+                        for (var key in studentMarkers) {
+                                if (!studentLoaded[key]) {
+                                        studentMarkers[key].setMap(map);
+                                        studentLoaded[key] = true;
+                                        console.log("new student set: " + studentMarkers[key].title);
+                                }
+                        }
+                        for (var key in characterMarkers) {
+                                if (!characterLoaded[key]) {
+                                        characterMarkers[key].setMap(map);
+                                        characterLoaded[key] = true;
+                                        console.log("new character set: " + characterMarkers[key].title);
+                                }
+                        }
                 }
                 navigator.geolocation.watchPosition(SendLocationInfo);
         </script>

@@ -111,6 +111,7 @@
                                         function() {
                                                 selfInfoWindow.open(map, selfMarker);
                                         });
+                                selfMarker.setMap(map);
                         }
                         for (var key in characterMarkers) {
                                 var path = [selflatlng, characterMarkers[key].position];

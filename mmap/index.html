@@ -22,6 +22,7 @@
                 var studentInfoWindows = {};
                 var studentLoaded = {};
                 var characterMarkers = {};
+                var characterPolyLines = {};
                 var characterInfoWindows = {};
                 var characterLoaded = {};
                 var initialPan = false;
@@ -74,12 +75,12 @@
 
                 function UpdateLocalLocation(newPosition) {
                         position = newPosition;
-                        var latlng = new google.maps.LatLng(
+                        selflatlng = new google.maps.LatLng(
                                 position.coords.latitude,
                                 position.coords.longitude
                                         );
                         if (!initialPan) {
-                                map.panTo(latlng);
+                                map.panTo(selflatlng);
                                 initialPan = true;
                         }
                         var infoContent = '<p>Login: ' +
@@ -91,13 +92,13 @@
                                 'Timestamp: ' +
                                 new Date() + '</p>';
                         if (selfMarker) {
-                                selfMarker.setPosition(latlng);
+                                selfMarker.setPosition(selflatlng);
                                 selfInfoWindow.content = infoContent;
                         } else {
                                 selfMarker = new google.maps.Marker({
                                         map: map,
                                         icon: selfImage,
-                                        position: latlng,
+                                        position: selflatlng,
                                         title: login
                                                 });
                                 selfInfoWindow = new google.maps.InfoWindow({
@@ -109,6 +110,10 @@
                                         function() {
                                                 selfInfoWindow.open(map, selfMarker);
                                         });
+                        }
+                        for (var key in characterMarkers) {
+                                var path = [selflatlng, characterMarkers[key].position];
+                                characterPolyLines[key].setPath(path);
                         }
                 }
  
@@ -184,6 +189,7 @@
                                 }
                         }
                         for (var key in characterMarkers) {
+                                var path = [selflatlng, characterMarkers[key].position];
                                 if (!characterLoaded[key]) {
                                         characterMarkers[key].setMap(map);
                                         google.maps.event.addListener(
@@ -194,7 +200,14 @@
                                                   characterInfoWindows[currKey].open(map, characterMarkers[currKey]);
                                                   });
                                                  })(key));
+                                        characterPolyLines[key] = new google.maps.Polyline({
+                                                path: path,
+                                                geodesic: true
+                                                        });
+                                        characterPolyLines[key].setMap(map);
                                         characterLoaded[key] = true;
+                                } else {
+                                        characterPolyLines[key].setPath(path);
                                 }
                         }
                 }

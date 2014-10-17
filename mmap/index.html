@@ -16,10 +16,13 @@
                 var myLoc;
                 var position;
                 var selfMarker;
+                var selfInfoWindow;
                 var selfImage = "charImg/ernie.png";
                 var studentMarkers = {};
+                var studentInfoWindows = {};
                 var studentLoaded = {};
                 var characterMarkers = {};
+                var characterInfoWindows = {};
                 var characterLoaded = {};
                 var initialPan = false;
                 var characterImages = {};
@@ -79,8 +82,17 @@
                                 map.panTo(latlng);
                                 initialPan = true;
                         }
+                        var infoContent = '<p>Login: ' +
+                                login + '<br/>' +
+                                'Latitude: ' +
+                                position.coords.latitude + '<br/>' +
+                                'Longitude: ' +
+                                position.coords.longitude + '<br/>' +
+                                'Timestamp: ' +
+                                new Date() + '</p>';
                         if (selfMarker) {
                                 selfMarker.setPosition(latlng);
+                                selfInfoWindow.content = infoContent;
                         } else {
                                 selfMarker = new google.maps.Marker({
                                         map: map,
@@ -88,15 +100,37 @@
                                         position: latlng,
                                         title: login
                                                 });
+                                selfInfoWindow = new google.maps.InfoWindow({
+                                        content: infoContent
+                                                });
+                                google.maps.event.addListener(
+                                        selfMarker,
+                                        'click',
+                                        function() {
+                                                selfInfoWindow.open(map, selfMarker);
+                                        });
                         }
                 }
  
                 function UpdateStudent(student) {
+                        if (student.login == login) return;
                         var latlng = new google.maps.LatLng(student.lat,
                                                             student.lng);
                         if (studentMarkers[student.login]) {
                                 studentMarkers[student.login].setPosition(latlng);
                         } else {
+                                var infoContent = '<p>Login: ' +
+                                        student.login + '<br/>' +
+                                        'Latitude: ' +
+                                        student.lat + '<br/>' +
+                                        'Longitude: ' +
+                                        student.lng + '<br/>' +
+                                        'Timestamp: ' +
+                                        new Date() + '</p>';
+                                var infoWindow = new google.maps.InfoWindow({
+                                        content: infoContent
+                                                });
+                                studentInfoWindows[student.login] = infoWindow;
                                 var marker = new google.maps.Marker({
                                         map: map,
                                         position: latlng,
@@ -112,6 +146,18 @@
                         if (characterMarkers[character.name]) {
                                 characterMarkers[character.name].setPosition(latlng);
                         } else {
+                                var infoContent = '<p>Name: ' +
+                                        character.name + '<br/>' +
+                                        'Latitude: ' +
+                                        character.loc.latitude + '<br/>' +
+                                        'Longitude: ' +
+                                        character.loc.longitude + '<br/>' +
+                                        'Note: ' +
+                                        character.loc.note + '</p>';
+                                var infoWindow = new google.maps.InfoWindow({
+                                        content: infoContent
+                                                });
+                                characterInfoWindows[character.name] = infoWindow;
                                 var marker = new google.maps.Marker({
                                         map: map,
                                         icon: characterImages[character.name],
@@ -126,12 +172,28 @@
                         for (var key in studentMarkers) {
                                 if (!studentLoaded[key]) {
                                         studentMarkers[key].setMap(map);
+                                        google.maps.event.addListener(
+                                                studentMarkers[key],
+                                                'click',
+                                                (function(currKey) {
+                                                 return (function() {
+                                                  studentInfoWindows[currKey].open(map, studentMarkers[currKey]);
+                                                 });
+                                                })(key));
                                         studentLoaded[key] = true;
                                 }
                         }
                         for (var key in characterMarkers) {
                                 if (!characterLoaded[key]) {
                                         characterMarkers[key].setMap(map);
+                                        google.maps.event.addListener(
+                                                characterMarkers[key],
+                                                'click',
+                                                (function(currKey) {
+                                                 return (function() {
+                                                  characterInfoWindows[currKey].open(map, characterMarkers[currKey]);
+                                                  });
+                                                 })(key));
                                         characterLoaded[key] = true;
                                 }
                         }

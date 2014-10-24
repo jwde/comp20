@@ -4,12 +4,18 @@
 
 <head>
         <title>My News Feed</title>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <script>
-          // Most of your work will be done here...
                 $(document).ready(function() {
-                        $('input#msg').submit(function() {
-                                $('#news').append('\n' + $('input#msg').val);
+                        $('#news').html(localStorage['newsfeedMessages']);
+                        $('input').on('keypress', function(eventObject) {
+                                if (eventObject.charCode == 13) {
+                                        var message = '<br/>' + new Date() +
+                                                ' - ' + $('#msg').val();
+                                        $('#news').append(message);
+                                        localStorage['newsfeedMessages'] =
+                                                $('#news').html();
+                                }
                         });
                 });
         </script>

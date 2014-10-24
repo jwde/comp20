@@ -6,15 +6,18 @@
         <title>My News Feed</title>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <script>
+                messages = '';
                 $(document).ready(function() {
-                        $('#news').html(localStorage['newsfeedMessages']);
+                        messages = localStorage['newsfeedMessages'];
+                        $('#news').append(localStorage['newsfeedMessages']);
                         $('input').on('keypress', function(eventObject) {
                                 if (eventObject.charCode == 13) {
                                         var message = '<br/>' + new Date() +
                                                 ' - ' + $('#msg').val();
-                                        $('#news').append(message);
+                                        messages = message + messages;
+                                        $('#news').html('News...' + messages);
                                         localStorage['newsfeedMessages'] =
-                                                $('#news').html();
+                                                messages;
                                 }
                         });
                 });

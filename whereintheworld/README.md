@@ -2,7 +2,8 @@
         Assignment 3: Where in the World...
         By: Jay DeStories
 
-1.) What has been implemented
+1.) What has been implemented<br>
+
         An express-js server script which responds to four types of requests:
         POST to /sendLocation
                 Client posts three parameters, login, lat, and lng. If all are
@@ -27,8 +28,10 @@
         Since this server enables CORS, this gets around the lack of CORS
         on the mbta server.
 
-2.) Collaboration
+2.) Collaboration<br>
+
         I did not collaborate with anyone on this assignment.
 
-3.) Time spent
+3.) Time spent<br>
+
         I spent approximately 4 hours on this assignment.

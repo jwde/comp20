@@ -61,7 +61,7 @@
                                 locationxhr.onreadystatechange =
                                         LocationRequestStateChange;
                                 locationxhr.open('post',
-                                                'http://chickenofthesea.herokuapp.com/sendLocation', true);
+                                                'http://localhost:3000/sendLocation', true);
                                 locationxhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                                 var params = "login=" +
                                         login +

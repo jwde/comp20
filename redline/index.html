@@ -46,7 +46,7 @@
                         }
                 };
                 function UpdateRequest() {
-                        trainXhr.open("get", "http://developer.mbta.com/lib/rthr/red.json", true);
+                        trainXhr.open("get", "http://localhost:3000/redline.json", true);
                         trainXhr.send();
                 }
                 UpdateRequest();

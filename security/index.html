@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Security Assessment of jasonwhere.herokuapp.com">
+    <meta name="author" content="Jay DeStories">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/blog.css"> 
+</head>
+
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <h1 class="blog-title">Security Assessment of jasonwhere.herokuapp.com</h1>
+            <p class="lead blog-description">By Jay DeStories</p>
+        </div>
+        <div class="row">
+            <div class="col-sm-8 blog-main">
+                    <div class="blog-post">
+                        <h2 class="blog-post-title">Introduction</h2>
+                        <p>This is an assessment of the security of the web application developed by Jason Brillon located at <a href="jasonwhere.herokuapp.com">jasonwhere.herokuapp.com</a> for assignment 3 of Comp 20, as well as Jason Brillon's Assignment 2, a client which utilizes this web appication. The web application allows clients to check in their location and handle, retrieve a list of recent check-ins by user or by any user, and retrieve a copy of the live information located at <a href="http://developer.mbta.com/lib/rthr/red.json">http://developer.mbta.com/lib/rthr/red.json</a>. A security vulnerability will be defined as any use of the web application in a way that violates its intended use, or causes its behavior to differ from its intended behavior.</p>
+                    </div>
+                    <div class="blog-post">
+                        <h2 class="blog-post-title">Methodology</h2>
+                        <p>I first attacked the web application without looking at any of the source code. I looked for common vulnerabilities and then, once I had exhausted my ideas, I looked at the source code for more vulnerabilities.</p>
+                    </div>
+                    <div class="blog-post">
+                        <h2 class="blog-post-title">Abstract of Findings</h2>
+                        <p></p>
+                    </div>
+                    <div class="blog-post">
+                        <h2 class="blog-post-title">Issues Found</h2>
+                        <h2>Cross-Site Scripting</h2>
+                        <h3>Location</h3>
+                        <p>The assignment 3 web application allows for a login/lng/lat to be posted to /sendLocation. Javascript can be posted as one of these fields and later executed when send to a client.</p>
+                        <h3>Severity</h3>
+                        <p>Severe Vulnerability: Arbitrary javascript can be executed on other people's browsers when they access the root html page or the locations.json page. This could mean a minor annoyance such as an alert window, or something more sever like redirecting them to a site containing malware or a phishing site.</p>
+                        <h3>Description</h3>
+                        <p>The values for login, lat, and lng posted to /sendLocations of the assignment 3 web application are not parsed before saving them in the mongo database, and are also not parsed before sent back to the user from the database. Therefore, any html can be placed within one of these fields, including any javascript, and it will be sent back to any client which requests those fields either by accessing the root html page or the locations.json page.</p>
+                        <h3>Proof</h3>
+                        <p>For example, a script generating an alert window can be placed within login, lat, or lng in a post. In this example, lng was set to <xmp><script>alert("xss worked in lng");</script></xmp></p>
+                        <div class="container">
+                        <img src="img/xssproof.png" alt="Example of an xss attack on assignment 3">
+                        </div>
+                        <h3>Resolution</h3>
+                        <h2>Location Spoofing</h2>
+                        <h3>Location</h3>
+                        <h3>Severity</h3>
+                        <h3>Description</h3>
+                        <h3>Proof</h3>
+                        <h3>Resolution</h3>
+                        <h2>Request Injection</h2>
+                        <h3>Location</h3>
+                        <h3>Severity</h3>
+                        <h3>Description</h3>
+                        <h3>Proof</h3>
+                        <h3>Resolution</h3>
+                        <h2>Issue #4</h2>
+                        <h3>Location</h3>
+                        <h3>Severity</h3>
+                        <h3>Description</h3>
+                        <h3>Proof</h3>
+                        <h3>Resolution</h3>
+                    </div>
+                    <div class="blog-post">
+                        <h2 class="blog-post-title">Conclusion</h2>
+                    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

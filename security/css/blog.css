@@ -107,6 +107,7 @@ h6, .h6 {
 .sidebar-module {
   padding: 15px;
   margin: 0 -15px 15px;
+  position: fixed;
 }
 .sidebar-module-inset {
   padding: 15px;

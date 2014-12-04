@@ -19,19 +19,21 @@
         <div class="row">
             <div class="col-sm-8 blog-main">
                     <div class="blog-post">
-                        <h2 class="blog-post-title">Introduction</h2>
-                        <p>This is an assessment of the security of the web application developed by Jason Brillon located at <a href="jasonwhere.herokuapp.com">jasonwhere.herokuapp.com</a> for assignment 3 of Comp 20, as well as Jason Brillon's Assignment 2, a client which utilizes this web appication. The web application allows clients to check in their location and handle, retrieve a list of recent check-ins by user or by any user, and retrieve a copy of the live information located at <a href="http://developer.mbta.com/lib/rthr/red.json">http://developer.mbta.com/lib/rthr/red.json</a>. A security vulnerability will be defined as any use of the web application in a way that violates its intended use, or causes its behavior to differ from its intended behavior.</p>
+                        <h2 id="introduction" class="blog-post-title">Introduction</h2>
+                        <p>This is an assessment of the security of the web application developed by Jason Brillon located at <a href="http://jasonwhere.herokuapp.com">jasonwhere.herokuapp.com</a> for assignment 3 of Comp 20, as well as Jason Brillon's Assignment 2, a client which utilizes this web appication. The web application allows clients to check in their location and handle, retrieve a list of recent check-ins by user or by any user, and retrieve a copy of the live information located at <a href="http://developer.mbta.com/lib/rthr/red.json">http://developer.mbta.com/lib/rthr/red.json</a>. A security vulnerability will be defined as any use of the web application in a way that violates its intended use, or causes its behavior to differ from its intended behavior.</p>
                     </div>
                     <div class="blog-post">
-                        <h2 class="blog-post-title">Methodology</h2>
-                        <p>I first attacked the web application without looking at any of the source code. I looked for common vulnerabilities and then, once I had exhausted my ideas, I looked at the source code for more vulnerabilities.</p>
+                        <h2 id="methodology" class="blog-post-title">Methodology</h2>
+                        <p>I first attacked the web application without looking at any of the source code. I looked for common vulnerabilities and then, once I had exhausted my ideas, I looked at the source code to determine how to resolve those vulnerabilities.</p>
+                        <h3>Tools used</h3>
+                        <p>curl, chromium web browser, chrome developer tools, firefox web browser, shell scripts</p>
                     </div>
                     <div class="blog-post">
-                        <h2 class="blog-post-title">Abstract of Findings</h2>
-                        <p></p>
+                        <h2 id="abstract" class="blog-post-title">Abstract of Findings</h2>
+                        <p>The vulnerabilities detailed in this assessment are the result of being too lenient with input from the client-- assignment 2 or any other application operating on the provided APIs. Text that is sent to the server is not filtered, and maliciously designed text can cause unintended behavior in the applications.</p>
                     </div>
                     <div class="blog-post">
-                        <h2 class="blog-post-title">Issues Found</h2>
+                        <h2 id="issues" class="blog-post-title">Issues Found</h2>
                         <h2>Cross-Site Scripting</h2>
                         <h3>Location</h3>
                         <p>The assignment 3 web application allows for a login/lng/lat to be posted to /sendLocation. Javascript can be posted as one of these fields and later executed when send to a client.</p>
@@ -42,31 +44,67 @@
                         <h3>Proof</h3>
                         <p>For example, a script generating an alert window can be placed within login, lat, or lng in a post. In this example, lng was set to <xmp><script>alert("xss worked in lng");</script></xmp></p>
                         <div class="container">
-                        <img src="img/xssproof.png" alt="Example of an xss attack on assignment 3">
+                            <img src="img/xssproof.png" alt="Example of an xss attack on assignment 3">
                         </div>
                         <h3>Resolution</h3>
+                        <p>To prevent injection of html tags like <xmp><script>...</script></xmp>, strings sent to the server should be sanitized before entered into the mongodb database. This means replacing instances of < and > with something else. An easy way to accomplish this is with the nodejs validator module.</p>
+                        <br>
+                        <h3>Example usage</h3>
+                        <p><code>var validator = require('validator');<br>
+                        ...<br>
+                        var login = validator.sanitize(request.body.login).xss()<br>
+                        var lat = validator.sanitize(request.body.lat).xss()<br>
+                        var lng = validator.sanitize(request.body.lng).xss()</code></p>
                         <h2>Location Spoofing</h2>
                         <h3>Location</h3>
+                        <p>This vulnerability is within the assignment 3 web application, but it manifests itself most in the assignment 2 client.</p>
                         <h3>Severity</h3>
+                        <p>Moderate: Locations can be faked, which can mislead clients of the API, including the assignment 2 client. Although the vulnerability itself is not disasterous, it is difficult to resolve, because the system relies on the client to self-report location.</p>
                         <h3>Description</h3>
+                        <p>The client self-reports location. If the assignment 2 client is used and is not tampered with, geolocation should get appropriate location values. However, if that data is tampered with or the data is posted from some other client or a tool like curl, that location can be modified to any arbitrary lat/lng. This means that anyone can report that they are at any location. This leads to other clients retrieving this information and falsely thinking that the malicious client is at that location. This reduces the utility of the application because it is less reliable.</p>
                         <h3>Proof</h3>
+                        <p>In this example, I posted the coordinates of the Eifel Tower to /sendLocation, despite being in Medford, using curl.</p>
+                        <div class="container">
+                            <img src="img/locationspoofproof.png" alt="Example of location spoofing on assignment 3">
+                        </div>
                         <h3>Resolution</h3>
+                        <p>This is a more difficult problem to resolve. One solution is to use a service to lookup an approximate location by IP, then verify that the user-reported location is nearby the location by IP before accepting it.</p>
                         <h2>Request Injection</h2>
                         <h3>Location</h3>
+                        <p>This vulnerability is limited to the assignment 3 web application.</p>
                         <h3>Severity</h3>
+                        <p>Low: The locations.json API can be used to get more information than is intended in a single query, but not information that could not otherwise be gotten through multiple requests. This is potentially dangerous as a way of more easily maliciously consuming server resources (DDOS).</p>
                         <h3>Description</h3>
+                        <p>The locations.json API takes in a login argument and returns the 100 most recent check-ins from that login. The argument can be modified to cause the API to return check-ins from more than one user at once. This could mean easily hitting the 100 check-in cap by performing a not equal query and getting check-ins out of the pool of all, or nearly all users. Doing so would be an easy way to make an expensive request to the surver. If the server was flooded with many such requests, it could slow it down for other users, potentially making the service unusable.</p>
                         <h3>Proof</h3>
+                        <p>In this example, I query login not equal to a garbage value. By doing so, I get back the json from check-ins from all logins.</p>
+                        <img src="img/requestinjectionproof.png" alt="Example of request injection in locations.json API">
                         <h3>Resolution</h3>
-                        <h2>Issue #4</h2>
+                        <h2>MongoDB Overload</h2>
                         <h3>Location</h3>
+                        <p>This vulnerability is in the assignment 3 web application, but a denial of service of assignment 3 will cause assignment 2 to fail because it depends on assignment 3.</p>
                         <h3>Severity</h3>
+                        <p>Moderate: The service can be shut down by a malicious client, but other clients are only affected in that they cannot use the service.</p>
                         <h3>Description</h3>
+                        <p>By sending a large amount of data to the /sendLocation API, it will be saved in the heroku MongoDB database. Since there is a limit to the amount of data that can be stored in the database at each heroku subscription tier, eventually the limit will be hit and it will not be possible to add new records. This means that other users who try to use the /sendLocation API will not be able to enter their locations into the database.</p>
                         <h3>Proof</h3>
                         <h3>Resolution</h3>
                     </div>
                     <div class="blog-post">
-                        <h2 class="blog-post-title">Conclusion</h2>
+                        <h2 id="conclusion" class="blog-post-title">Conclusion</h2>
                     </div>
+            </div>
+            <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+                <div class="sidebar-module">
+                    <h4>Sections</h4>
+                    <ol class="list-unstyled">
+                        <li><a href="#introduction">Introduction</a></li>
+                        <li><a href="#methodology">Methodology</a></li>
+                        <li><a href="#abstract">Abstract of Findings</a></li>
+                        <li><a href="#issues">Issues Found</a></li>
+                        <li><a href="#conclusion">Conclusion</a></li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>

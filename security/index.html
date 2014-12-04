@@ -43,9 +43,7 @@
                         <p>The values for login, lat, and lng posted to /sendLocations of the assignment 3 web application are not parsed before saving them in the mongo database, and are also not parsed before sent back to the user from the database. Therefore, any html can be placed within one of these fields, including any javascript, and it will be sent back to any client which requests those fields either by accessing the root html page or the locations.json page.</p>
                         <h3>Proof</h3>
                         <p>For example, a script generating an alert window can be placed within login, lat, or lng in a post. In this example, lng was set to <xmp><script>alert("xss worked in lng");</script></xmp></p>
-                        <div class="container">
-                            <img src="img/xssproof.png" alt="Example of an xss attack on assignment 3">
-                        </div>
+                        <img class="proofimage" src="img/xssproof.png" alt="Example of an xss attack on assignment 3">
                         <h3>Resolution</h3>
                         <p>To prevent injection of html tags like <xmp><script>...</script></xmp>, strings sent to the server should be sanitized before entered into the mongodb database. This means replacing instances of < and > with something else. An easy way to accomplish this is with the nodejs validator module.</p>
                         <br>
@@ -64,9 +62,7 @@
                         <p>The client self-reports location. If the assignment 2 client is used and is not tampered with, geolocation should get appropriate location values. However, if that data is tampered with or the data is posted from some other client or a tool like curl, that location can be modified to any arbitrary lat/lng. This means that anyone can report that they are at any location. This leads to other clients retrieving this information and falsely thinking that the malicious client is at that location. This reduces the utility of the application because it is less reliable.</p>
                         <h3>Proof</h3>
                         <p>In this example, I posted the coordinates of the Eifel Tower to /sendLocation, despite being in Medford, using curl.</p>
-                        <div class="container">
-                            <img src="img/locationspoofproof.png" alt="Example of location spoofing on assignment 3">
-                        </div>
+                        <img class="proofimage" src="img/locationspoofproof.png" alt="Example of location spoofing on assignment 3">
                         <h3>Resolution</h3>
                         <p>This is a more difficult problem to resolve. One solution is to use a service to lookup an approximate location by IP, then verify that the user-reported location is nearby the location by IP before accepting it.</p>
                         <h2>Request Injection</h2>
@@ -78,20 +74,29 @@
                         <p>The locations.json API takes in a login argument and returns the 100 most recent check-ins from that login. The argument can be modified to cause the API to return check-ins from more than one user at once. This could mean easily hitting the 100 check-in cap by performing a not equal query and getting check-ins out of the pool of all, or nearly all users. Doing so would be an easy way to make an expensive request to the surver. If the server was flooded with many such requests, it could slow it down for other users, potentially making the service unusable.</p>
                         <h3>Proof</h3>
                         <p>In this example, I query login not equal to a garbage value. By doing so, I get back the json from check-ins from all logins.</p>
-                        <img src="img/requestinjectionproof.png" alt="Example of request injection in locations.json API">
+                        <img class="proofimage" src="img/requestinjectionproof.png" alt="Example of request injection in locations.json API">
                         <h3>Resolution</h3>
+                        <p>When making a query like<xmp>?login[$ne]=somegarbage</xmp>The query, gotten with<br><code>var login = req.query.login</code><br>is not a string, but rather an object mapping $ne to somegarbage. It is then possible to sanitize the query by checking that it is not a dictionary, but instead a string before querying the database.</p>
                         <h2>MongoDB Overload</h2>
                         <h3>Location</h3>
-                        <p>This vulnerability is in the assignment 3 web application, but a denial of service of assignment 3 will cause assignment 2 to fail because it depends on assignment 3.</p>
+                        <p>This vulnerability is in the assignment 3 web application, but a denial of service in assignment 3 will cause assignment 2 to fail because it depends on assignment 3.</p>
                         <h3>Severity</h3>
                         <p>Moderate: The service can be shut down by a malicious client, but other clients are only affected in that they cannot use the service.</p>
                         <h3>Description</h3>
                         <p>By sending a large amount of data to the /sendLocation API, it will be saved in the heroku MongoDB database. Since there is a limit to the amount of data that can be stored in the database at each heroku subscription tier, eventually the limit will be hit and it will not be possible to add new records. This means that other users who try to use the /sendLocation API will not be able to enter their locations into the database.</p>
                         <h3>Proof</h3>
+                        <p>To overload the database for jasonwhere.herokuapp.com, I ran the following shell script.</p>
+                        <code>for i in {1..500000..1}<br>
+                        do<br>
+                            curl --data "login="denialofservicetestfffffffffff...&lat=0&lng=0" http://jasonwhere.herokuapp.com/sendLocation > /dev/null<br>
+                        done</code>
+                        <p>The cap on the heroku database is 500 megabytes for free users, which on my internet connection would take approximately 16 hours to fill by running this script. If it were reached, the database would not be able to accept new entries, which would violate the expected behavior for the /sendLocation API.</p>
                         <h3>Resolution</h3>
+                        <p>The simplest resolution to this problem is to ignore any POSTs from an IP after some reasonably large number of POSTs. That way, a single user can't take down the service. This does leave the system vulnerable to a distributed denial of service, but that would be more difficult to orchestrate.</p>
                     </div>
                     <div class="blog-post">
                         <h2 id="conclusion" class="blog-post-title">Conclusion</h2>
+                        <p>The assignment 3 web application has vulnerabilities that can cause the application to stop working or work in unintended ways. For some of the vulnerabilites outlined above, complete solutions are provided. For others, partial solutions or suggestions are provided. None of the solutions suggested above would be expensive to implement. Based on the time spent on this assessment and the national security consultant salary average, the cost to make changes outlined above, including the time to find these vulnerabilities and come up with resolutions, would be approximately $350.</p>
                     </div>
             </div>
             <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
